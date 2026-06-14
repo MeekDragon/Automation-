@@ -1,0 +1,15 @@
+# Dependency directories
+node_modules/
+
+# Local configuration / API secrets
+.env
+
+# Database file containing credentials and user info
+db.json
+
+# User media uploads
+uploads/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
