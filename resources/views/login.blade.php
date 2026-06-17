@@ -8,19 +8,21 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --font-family: 'Inter', sans-serif;
-      --bg-color: #0A0A0A;
-      --card-bg: rgba(17, 17, 17, 0.85);
-      --card-border: rgba(255, 255, 255, 0.06);
-      --text-primary: #F3F4F6;
-      --text-secondary: #9CA3AF;
-      --accent-primary: #F59E0B;
-      --accent-danger: #EF4444;
-      --input-bg: #0A0A0A;
+      --font-family: 'Outfit', 'Inter', sans-serif;
+      --bg-color: #05040a;
+      --card-bg: rgba(14, 11, 28, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #FFFFFF;
+      --text-secondary: #B4A8D3;
+      --accent-primary: #FF007A;
+      --accent-danger: #FF0055;
+      --input-bg: rgba(7, 4, 18, 0.85);
       --input-border: rgba(255, 255, 255, 0.1);
+      --neon-purple: #7928CA;
+      --neon-cyan: #00F0FF;
     }
     * {
       box-sizing: border-box;
@@ -51,22 +53,22 @@
     .blob {
       position: absolute;
       border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.25;
+      filter: blur(140px);
+      opacity: 0.18;
     }
     .blob-1 {
-      top: -10%;
-      right: 10%;
+      top: -15%;
+      right: -5%;
       width: 450px;
       height: 450px;
-      background: radial-gradient(circle, #F59E0B 0%, #EF4444 100%);
+      background: radial-gradient(circle, var(--accent-primary) 0%, var(--neon-purple) 60%, rgba(0,0,0,0) 100%);
     }
     .blob-2 {
-      bottom: -10%;
-      left: 10%;
+      bottom: -15%;
+      left: -5%;
       width: 500px;
       height: 500px;
-      background: radial-gradient(circle, #D97706 0%, #78350F 100%);
+      background: radial-gradient(circle, var(--neon-cyan) 0%, var(--neon-purple) 60%, rgba(0,0,0,0) 100%);
     }
     /* Glass card */
     .login-card {
@@ -76,22 +78,28 @@
       padding: 40px;
       width: 90%;
       max-width: 420px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       text-align: center;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .login-card:hover {
+      border-color: rgba(255, 0, 122, 0.2);
+      box-shadow: 0 12px 40px 0 rgba(121, 40, 202, 0.15);
     }
     .logo-container {
       margin-bottom: 24px;
     }
     h1 {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 800;
       letter-spacing: -0.04em;
-      background: linear-gradient(135deg, #FFF 30%, var(--accent-primary) 100%);
+      background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 50%, var(--accent-primary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
+      text-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
     }
     p {
       color: var(--text-secondary);
@@ -122,12 +130,13 @@
     }
     input:focus {
       outline: none;
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
     }
     .btn {
       width: 100%;
-      background: linear-gradient(135deg, var(--accent-primary) 0%, #EF4444 100%);
+      background: linear-gradient(135deg, var(--neon-purple) 0%, var(--accent-primary) 50%, var(--neon-cyan) 100%);
+      background-size: 200% auto;
       color: white;
       border: none;
       padding: 14px;
@@ -136,13 +145,14 @@
       font-size: 1rem;
       border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(255, 0, 122, 0.35);
+      transition: all 0.3s ease;
       margin-top: 10px;
     }
     .btn:hover {
+      background-position: right center;
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+      box-shadow: 0 6px 22px rgba(255, 0, 122, 0.5), 0 0 10px rgba(0, 240, 255, 0.3);
     }
     .alert {
       background: rgba(239, 68, 68, 0.15);
@@ -168,6 +178,7 @@
       color: #FBBF24;
     }
   </style>
+
 </head>
 <body>
   <div class="bg-blobs">

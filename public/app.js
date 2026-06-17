@@ -95,6 +95,17 @@ const wpPwInput = document.getElementById('wp-pw-input');
 const btnWpSave = document.getElementById('btn-wp-save');
 const wpSpinner = document.getElementById('wp-spinner');
 
+// Cropping Variables
+let cropper = null;
+let selectedFile = null;
+const btnCropMedia = document.getElementById('btn-crop-media');
+const cropModal = document.getElementById('crop-modal');
+const cropModalClose = document.getElementById('crop-modal-close');
+const cropImageTarget = document.getElementById('crop-image-target');
+const cropAspectRatios = document.getElementById('crop-aspect-ratios');
+const btnCropCancel = document.getElementById('btn-crop-cancel');
+const btnCropSave = document.getElementById('btn-crop-save');
+
 // ----------------------------------------------------
 // Initialization & Authentication
 // ----------------------------------------------------
@@ -659,6 +670,7 @@ function handleFileSelect() {
   const file = mediaInput.files[0];
   if (!file) return;
 
+  selectedFile = file;
   const fileUrl = URL.createObjectURL(file);
   dropzoneText.classList.add('hidden');
   previewContainer.classList.remove('hidden');
@@ -667,21 +679,110 @@ function handleFileSelect() {
     imgPreview.src = fileUrl;
     imgPreview.classList.remove('hidden');
     videoPreview.classList.add('hidden');
+    btnCropMedia.classList.remove('hidden');
   } else if (file.type.startsWith('video/')) {
     videoPreview.src = fileUrl;
     videoPreview.classList.remove('hidden');
     imgPreview.classList.add('hidden');
+    btnCropMedia.classList.add('hidden');
   }
 }
 
 btnRemovePreview.addEventListener('click', (e) => {
   e.stopPropagation();
   mediaInput.value = '';
+  selectedFile = null;
   dropzoneText.classList.remove('hidden');
   previewContainer.classList.add('hidden');
   imgPreview.src = '';
   videoPreview.src = '';
+  btnCropMedia.classList.add('hidden');
 });
+
+// Cropping Modal Interactions
+if (btnCropMedia) {
+  btnCropMedia.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!selectedFile) return;
+
+    const fileUrl = URL.createObjectURL(selectedFile);
+    cropImageTarget.src = fileUrl;
+    cropModal.classList.remove('hidden');
+
+    if (cropper) {
+      cropper.destroy();
+    }
+    cropper = new Cropper(cropImageTarget, {
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 1,
+      restore: false,
+      guides: true,
+      center: true,
+      highlight: false,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      toggleDragModeOnDblclick: false,
+    });
+  });
+}
+
+const closeCropModal = () => {
+  cropModal.classList.add('hidden');
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+};
+if (cropModalClose) cropModalClose.addEventListener('click', closeCropModal);
+if (btnCropCancel) btnCropCancel.addEventListener('click', closeCropModal);
+
+if (cropAspectRatios) {
+  cropAspectRatios.addEventListener('click', (e) => {
+    if (!cropper) return;
+    const btn = e.target.closest('.btn');
+    if (!btn) return;
+
+    cropAspectRatios.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const ratio = btn.getAttribute('data-ratio');
+    if (ratio === 'free') {
+      cropper.setAspectRatio(NaN);
+    } else {
+      cropper.setAspectRatio(parseFloat(ratio));
+    }
+  });
+}
+
+if (btnCropSave) {
+  btnCropSave.addEventListener('click', () => {
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas({
+      maxWidth: 4096,
+      maxHeight: 4096,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high',
+    });
+
+    if (canvas) {
+      canvas.toBlob((blob) => {
+        const croppedFile = new File([blob], selectedFile.name, {
+          type: selectedFile.type,
+          lastModified: Date.now()
+        });
+
+        selectedFile = croppedFile;
+        const newUrl = URL.createObjectURL(croppedFile);
+        imgPreview.src = newUrl;
+
+        closeCropModal();
+        showAlert('Image successfully cropped!', 'success');
+      }, selectedFile.type);
+    }
+  });
+}
 
 // ----------------------------------------------------
 // Submit / Publish Composer Form
@@ -689,7 +790,7 @@ btnRemovePreview.addEventListener('click', (e) => {
 composerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  if (!mediaInput.files[0]) {
+  if (!selectedFile) {
     showAlert('Please select a media file to upload.', 'danger');
     return;
   }
@@ -707,10 +808,11 @@ composerForm.addEventListener('submit', async (e) => {
   btnPublish.querySelector('.btn-text').classList.add('hidden');
 
   const formData = new FormData();
-  formData.append('media', mediaInput.files[0]);
+  formData.append('media', selectedFile);
   formData.append('title', document.getElementById('title-input').value);
   formData.append('description', document.getElementById('desc-input').value);
   formData.append('tags', document.getElementById('tags-input').value);
+  formData.append('quality', document.getElementById('quality-select').value);
   
   // Send destinations as standard form array fields
   selectedPlatforms.forEach(p => {
@@ -1092,6 +1194,15 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', () => {
   const tabLinks = document.querySelectorAll('.header-nav .nav-link');
   const tabContents = document.querySelectorAll('.tab-content');
+  const navContainer = document.querySelector('.header-nav');
+
+  const updateNavIndicator = () => {
+    const activeLink = document.querySelector('.header-nav .nav-link.active');
+    if (activeLink && navContainer) {
+      navContainer.style.setProperty('--nav-indicator-left', `${activeLink.offsetLeft}px`);
+      navContainer.style.setProperty('--nav-indicator-width', `${activeLink.offsetWidth}px`);
+    }
+  };
 
   if (tabLinks && tabContents) {
     tabLinks.forEach(link => {
@@ -1103,6 +1214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update navigation links state
         tabLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
+        updateNavIndicator();
         
         // Toggle corresponding container visibility
         tabContents.forEach(content => {
@@ -1123,7 +1235,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     });
+
+    // Initial positioning and window resize listener
+    setTimeout(updateNavIndicator, 100);
+    window.addEventListener('resize', updateNavIndicator);
   }
+
 
   // Campaigns Filter Registry
   const campaignsSearch = document.getElementById('campaigns-search');

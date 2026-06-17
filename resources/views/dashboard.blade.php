@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Cropper.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
   <style>
@@ -84,7 +86,9 @@
   <div class="glass-bg-blobs">
     <div class="blob blob-purple"></div>
     <div class="blob blob-blue"></div>
+    <div class="blob blob-green"></div>
   </div>
+
 
   <div class="app-container">
     <!-- Header -->
@@ -290,9 +294,21 @@
                 <div class="preview-container hidden" id="preview-container">
                   <img id="img-preview" class="media-preview hidden" alt="Upload Preview">
                   <video id="video-preview" class="media-preview hidden" controls></video>
-                  <button type="button" class="btn-remove-preview" id="btn-remove-preview">✕ Remove Media</button>
+                  <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px; width: 100%;">
+                    <button type="button" class="btn btn-secondary btn-sm hidden" id="btn-crop-media">✂️ Crop Image</button>
+                    <button type="button" class="btn-remove-preview" id="btn-remove-preview">✕ Remove Media</button>
+                  </div>
                 </div>
               </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 20px;">
+              <label for="quality-select">Upload Quality Settings</label>
+              <select id="quality-select" name="quality" style="width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; padding: 14px 16px; color: var(--text-primary); font-family: var(--font-family);">
+                <option value="original">Original (Maintain 100% Quality & Resolution)</option>
+                <option value="optimized">Web Optimized (High Compression for Faster Loading)</option>
+              </select>
+              <span class="form-sub-text">Note: Video files are always uploaded in their original source quality to ensure 100% visual fidelity on YouTube and Instagram.</span>
             </div>
             <div class="step-nav-buttons" style="justify-content: flex-end;">
               <button type="button" class="btn btn-primary" id="btn-next-1">Next Step ➜</button>
@@ -640,7 +656,11 @@
         
         <div class="card glass-card">
           <h2>Linked Channels</h2>
-          <p class="card-desc">Authenticate your platforms for one-click publishing.</p>
+          <p class="card-desc">Authenticate your platforms for one-click publishing.
+            <small style="color: var(--accent-primary); display: block; margin-top: 6px; font-size: 0.76rem; line-height: 1.3;">
+              ⚠️ <strong>Switching Meta Accounts:</strong> If you want to connect a different Facebook or Instagram account, please visit <a href="https://facebook.com" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">facebook.com</a> and log out or switch to the correct profile before clicking Link.
+            </small>
+          </p>
           <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 16px;" id="settings-channels-list">
             <!-- Dynamically populated -->
           </div>
@@ -678,6 +698,34 @@
     </div>
   </div>
 
+  <!-- Crop Image Modal -->
+  <div class="modal-backdrop hidden" id="crop-modal" style="z-index: 2000;">
+    <div class="modal glass-card" style="max-width: 700px; width: 90%;">
+      <div class="modal-header">
+        <h2>✂️ Crop Image</h2>
+        <button type="button" class="modal-close" id="crop-modal-close">✕</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 20px 0;">
+        <div style="max-height: 400px; max-width: 100%; overflow: hidden; background: #0c101d; display: flex; justify-content: center; align-items: center; border-radius: 8px; border: 1px solid var(--card-border);">
+          <img id="crop-image-target" style="max-width: 100%; max-height: 400px; display: block;">
+        </div>
+        <div class="crop-aspect-ratios" id="crop-aspect-ratios" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; justify-content: center;">
+          <button type="button" class="btn btn-secondary btn-sm active" data-ratio="free">Free Crop</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-ratio="1">1:1 (Square - IG Post)</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-ratio="0.8">4:5 (Portrait - IG Post)</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-ratio="1.7777">16:9 (Landscape - YT/WP)</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-ratio="0.5625">9:16 (Vertical - Shorts/Stories)</button>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px; margin-top: 10px;">
+        <button type="button" class="btn btn-secondary" id="btn-crop-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-crop-save">Apply Crop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cropper.js Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
