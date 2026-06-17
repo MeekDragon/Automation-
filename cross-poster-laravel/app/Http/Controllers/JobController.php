@@ -75,9 +75,34 @@ class JobController extends Controller
         $file = $request->file('media');
         $fileName = time() . '-' . rand(100000000, 999999999) . '.' . $file->getClientOriginalExtension();
         
-        // Save to public uploads
-        $file->move(public_path('uploads'), $fileName);
-        $mediaPath = public_path('uploads/' . $fileName);
+        $destinationPath = public_path('uploads');
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+        
+        $mediaPath = $destinationPath . '/' . $fileName;
+        $qualitySetting = $request->input('quality', 'original');
+        $mime = $file->getMimeType();
+        
+        if ($qualitySetting === 'optimized' && str_starts_with($mime, 'image/')) {
+            // Compress image with GD library
+            try {
+                $imgData = file_get_contents($file->getRealPath());
+                $image = @imagecreatefromstring($imgData);
+                if ($image !== false) {
+                    $fileName = pathinfo($fileName, PATHINFO_FILENAME) . '.jpg';
+                    $mediaPath = $destinationPath . '/' . $fileName;
+                    imagejpeg($image, $mediaPath, 80);
+                    imagedestroy($image);
+                } else {
+                    $file->move($destinationPath, $fileName);
+                }
+            } catch (\Exception $e) {
+                $file->move($destinationPath, $fileName);
+            }
+        } else {
+            $file->move($destinationPath, $fileName);
+        }
 
         $jobId = 'job_' . round(microtime(true) * 1000);
         $scheduledAt = $request->input('scheduledAt') ? new \DateTime($request->input('scheduledAt')) : null;
@@ -140,7 +165,7 @@ class JobController extends Controller
         ]);
     }
 
-    public function logs(Request $request, string $id = null): JsonResponse
+    public function logs(Request $request, ?string $id = null): JsonResponse
     {
         $user = Auth::user();
         $jobId = $id ?? $request->query('jobId');
