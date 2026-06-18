@@ -189,7 +189,7 @@ class JobController extends Controller
             ->get()
             ->map(function ($log) {
                 return [
-                    'timestamp' => $log->created_at->toIso8601String(),
+                    'timestamp' => \Carbon\Carbon::parse($log->created_at)->toIso8601String(),
                     'platform' => $log->platform_key,
                     'message' => $log->message,
                     'type' => $log->type
