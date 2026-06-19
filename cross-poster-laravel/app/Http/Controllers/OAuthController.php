@@ -117,7 +117,12 @@ class OAuthController extends Controller
             abort(500, 'Facebook OAuth credentials not configured in .env');
         }
 
-        $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement";
+        $configId = env('FACEBOOK_CONFIG_ID');
+        if ($configId) {
+            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&config_id={$configId}&response_type=code&override_default_response_type=true";
+        } else {
+            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement";
+        }
         return redirect()->away($url);
     }
 

@@ -219,6 +219,32 @@
                 </div>
               </div>
             </div>
+
+            <!-- Twitter/X Account Card -->
+            <div class="channel-item" id="channel-twitter" style="margin-top: 14px;">
+              <div class="channel-info">
+                <span class="channel-icon tw">
+                  <svg class="brand-svg-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </span>
+                <div>
+                  <h3>Twitter / X</h3>
+                  <p class="channel-status" id="tw-status"><span class="dot-indicator disconnected">●</span> Not Connected</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- LinkedIn Account Card -->
+            <div class="channel-item" id="channel-linkedin" style="margin-top: 14px;">
+              <div class="channel-info">
+                <span class="channel-icon li">
+                  <svg class="brand-svg-icon" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z"/></svg>
+                </span>
+                <div>
+                  <h3>LinkedIn</h3>
+                  <p class="channel-status" id="li-status"><span class="dot-indicator disconnected">●</span> Not Connected</p>
+                </div>
+              </div>
+            </div>
           </div>
           <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--card-border); font-size: 0.75rem; color: var(--text-muted); text-align: center;">
             💡 Visit the <strong>Settings</strong> tab to link or unlink channels.
@@ -425,6 +451,30 @@
                     </div>
                   </div>
                 </label>
+                <!-- Twitter/X Post -->
+                <label class="selector-checkbox" id="selector-tw-label">
+                  <input type="checkbox" name="platforms" value="twitter">
+                  <div class="selector-box">
+                    <span class="selector-indicator"></span>
+                    <span class="sel-icon">🐦</span>
+                    <div>
+                      <strong>Twitter / X Post</strong>
+                      <span class="sel-sub">Tweet Update</span>
+                    </div>
+                  </div>
+                </label>
+                <!-- LinkedIn Post -->
+                <label class="selector-checkbox" id="selector-li-label">
+                  <input type="checkbox" name="platforms" value="linkedin">
+                  <div class="selector-box">
+                    <span class="selector-indicator"></span>
+                    <span class="sel-icon">💼</span>
+                    <div>
+                      <strong>LinkedIn Post</strong>
+                      <span class="sel-sub">Share Update</span>
+                    </div>
+                  </div>
+                </label>
               </div>
             </div>
 
@@ -603,6 +653,24 @@
                   <div id="analytics-wp-bar" style="width: 0%; height: 100%; background: var(--wp-blue); border-radius: 4px; transition: width 0.6s ease;"></div>
                 </div>
               </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
+                  <span>Twitter / X</span>
+                  <span id="analytics-tw-pct">0%</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
+                  <div id="analytics-tw-bar" style="width: 0%; height: 100%; background: var(--tw-blue); border-radius: 4px; transition: width 0.6s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
+                  <span>LinkedIn</span>
+                  <span id="analytics-li-pct">0%</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
+                  <div id="analytics-li-bar" style="width: 0%; height: 100%; background: var(--li-blue); border-radius: 4px; transition: width 0.6s ease;"></div>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -612,7 +680,7 @@
             <p class="card-desc">Telemetry delivery success ratios.</p>
             <div style="margin-top: 16px; display: flex; align-items: center; justify-content: center; height: 160px; position: relative;">
               <div style="text-align: center;">
-                <span id="analytics-success-ratio" style="font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #10B981 0%, #34D399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0%</span>
+                <span id="analytics-success-ratio" style="font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-primary) 0%, #e2d4c0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0%</span>
                 <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">Success Ratio</p>
               </div>
             </div>

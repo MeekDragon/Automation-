@@ -3,31 +3,31 @@
 :root {
   --font-family: 'Outfit', 'Inter', sans-serif;
   
-  /* Cosmic Cyberpunk Color Palette */
-  --bg-color: #05040a;
-  --card-bg: rgba(14, 11, 28, 0.65);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --input-bg: rgba(7, 4, 18, 0.85);
-  --input-border: rgba(255, 255, 255, 0.1);
+  /* Millennial Elegant Color Palette */
+  --bg-color: #07070a;
+  --card-bg: rgba(18, 18, 22, 0.85);
+  --card-border: rgba(197, 168, 128, 0.16);
+  --input-bg: rgba(10, 10, 12, 0.85);
+  --input-border: rgba(197, 168, 128, 0.1);
   
-  --text-primary: #FFFFFF;
-  --text-secondary: #B4A8D3;
-  --text-muted: #6C5F8E;
+  --text-primary: #fcfcfd;
+  --text-secondary: #e4e4e7;
+  --text-muted: #a1a1aa;
   
-  --accent-primary: #FF007A; /* Neon Pink */
-  --accent-primary-hover: #D80064;
-  --accent-success: #00F5A0; /* Neon Mint */
-  --accent-danger: #FF0055;  /* Neon Rose */
-  --accent-warning: #FF9F00; /* Neon Gold */
+  --accent-primary: #c5a880; /* Champagne Gold */
+  --accent-primary-hover: #b2946c;
+  --accent-success: #10B981; /* Muted Emerald */
+  --accent-danger: #EF4444;  /* Muted Crimson */
+  --accent-warning: #F59E0B; /* Muted Amber */
   
   /* Platform Colors */
-  --yt-red: #FF0000;
-  --ig-pink: #E1306C;
-  --wp-blue: #21759B;
+  --yt-red: #ef4444;
+  --ig-pink: #f43f5e;
+  --wp-blue: #3b82f6;
+  --tw-blue: #1d9bf0;
+  --li-blue: #0a66c2;
 
-  /* Special Neon Gradients */
-  --neon-purple: #7928CA;
-  --neon-cyan: #00F0FF;
+  --accent-glow: rgba(197, 168, 128, 0.15);
 }
 
 
@@ -45,64 +45,15 @@ body {
   overflow-x: hidden;
   position: relative;
   line-height: 1.5;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(197, 168, 128, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.01) 0px, transparent 50%);
 }
 
-/* Background Glowing Blobs */
+/* Background Glowing Blobs hidden for sleek design */
 .glass-bg-blobs {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
+  display: none;
 }
-
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(140px);
-  opacity: 0.18;
-  animation: pulse-blob 15s infinite alternate ease-in-out;
-}
-
-.blob-purple {
-  top: -15%;
-  right: -5%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, var(--accent-primary) 0%, var(--neon-purple) 60%, rgba(0, 0, 0, 0) 100%);
-}
-
-.blob-blue {
-  bottom: -15%;
-  left: -5%;
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, var(--neon-cyan) 0%, var(--wp-blue) 60%, rgba(0, 0, 0, 0) 100%);
-  animation-delay: 5s;
-}
-
-.blob-green {
-  top: 35%;
-  left: 35%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, var(--neon-purple) 0%, rgba(0, 240, 255, 0.1) 60%, rgba(0, 0, 0, 0) 100%);
-  opacity: 0.08;
-  animation-delay: 2s;
-}
-
-@keyframes pulse-blob {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    transform: translate(60px, 40px) scale(1.2);
-  }
-}
-
 
 /* App Container Layout */
 .app-container {
@@ -120,7 +71,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(197, 168, 128, 0.12);
   margin-bottom: 8px;
 }
 
@@ -136,13 +87,12 @@ body {
 
 .app-header h1 {
   font-size: 2.2rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.05em;
-  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 50%, var(--accent-primary) 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #e2d4c0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
-  text-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
 }
 
 
@@ -199,14 +149,14 @@ body {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--neon-purple) 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #e2d4c0 100%);
+  color: #07070a;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 0.95rem;
-  box-shadow: 0 4px 14px rgba(255, 0, 122, 0.4);
+  box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);
 }
 
 
@@ -236,8 +186,8 @@ body {
 }
 
 .card:hover {
-  border-color: rgba(255, 0, 122, 0.2);
-  box-shadow: 0 12px 40px 0 rgba(121, 40, 202, 0.15), 0 0 20px rgba(255, 0, 122, 0.05);
+  border-color: rgba(197, 168, 128, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55), 0 0 16px rgba(197, 168, 128, 0.08);
 }
 
 
@@ -284,10 +234,11 @@ textarea {
 input[type="text"]:focus,
 input[type="url"]:focus,
 input[type="password"]:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   outline: none;
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .form-sub-text {
@@ -315,16 +266,17 @@ textarea:focus {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--neon-purple) 0%, var(--accent-primary) 50%, var(--neon-cyan) 100%);
-  background-size: 200% auto;
-  box-shadow: 0 4px 15px rgba(255, 0, 122, 0.35);
-  transition: all 0.3s ease;
+  background: var(--accent-primary);
+  color: #07070a;
+  box-shadow: 0 4px 15px rgba(197, 168, 128, 0.2);
+  transition: all 0.25s ease;
 }
 
 .btn-primary:hover {
-  background-position: right center;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 22px rgba(255, 0, 122, 0.5), 0 0 10px rgba(0, 240, 255, 0.3);
+  background: #d4b58b;
+  transform: translateY(-1px);
+  color: #07070a;
+  box-shadow: 0 6px 20px rgba(197, 168, 128, 0.35);
 }
 
 
@@ -338,16 +290,16 @@ textarea:focus {
 }
 
 .btn-connect {
-  background: rgba(124, 58, 237, 0.15);
-  border: 1px solid rgba(124, 58, 237, 0.35);
-  color: #C7D2FE;
+  background: rgba(197, 168, 128, 0.08);
+  border: 1px solid rgba(197, 168, 128, 0.3);
+  color: #e2d4c0;
 }
 
 .btn-connect:hover {
-  background: #7C3AED;
-  border-color: #7C3AED;
+  background: rgba(197, 168, 128, 0.2);
+  border-color: var(--accent-primary);
   color: white;
-  box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .btn-danger {
@@ -432,6 +384,18 @@ textarea:focus {
   color: var(--wp-blue);
   background: rgba(59, 130, 246, 0.08);
   border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.channel-icon.tw {
+  color: var(--tw-blue);
+  background: rgba(29, 155, 240, 0.08);
+  border: 1px solid rgba(29, 155, 240, 0.15);
+}
+
+.channel-icon.li {
+  color: var(--li-blue);
+  background: rgba(10, 102, 194, 0.08);
+  border: 1px solid rgba(10, 102, 194, 0.15);
 }
 
 .brand-svg-icon {
@@ -593,8 +557,8 @@ textarea:focus {
 
 .selector-checkbox input[type="checkbox"]:checked + .selector-box {
   border-color: var(--accent-primary);
-  background: rgba(245, 158, 11, 0.1);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+  background: rgba(197, 168, 128, 0.08);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .selector-indicator {
@@ -886,7 +850,7 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.03);
   padding: 4px;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(197, 168, 128, 0.12);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -904,11 +868,11 @@ textarea:focus {
   bottom: 4px;
   left: var(--nav-indicator-left, 0);
   width: var(--nav-indicator-width, 0);
-  background: linear-gradient(135deg, var(--neon-purple) 0%, var(--accent-primary) 100%);
+  background: rgba(197, 168, 128, 0.12);
+  border: 1px solid rgba(197, 168, 128, 0.25);
   border-radius: 9999px;
   transition: left 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 0;
-  box-shadow: 0 0 15px rgba(255, 0, 122, 0.35);
   pointer-events: none;
 }
 
@@ -1059,18 +1023,26 @@ textarea:focus {
   font-weight: 500;
 }
 
-/* 3. Platform Logo Glow & Card Enhancements */
+/* 3. Platform Logo Hover & Card Enhancements */
 #channel-youtube:hover {
   border-color: rgba(239, 68, 68, 0.35);
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.08);
 }
 #channel-instagram:hover {
   border-color: rgba(236, 72, 153, 0.35);
-  box-shadow: 0 0 16px rgba(236, 72, 153, 0.12);
+  box-shadow: 0 0 16px rgba(236, 72, 153, 0.08);
 }
 #channel-wordpress:hover {
   border-color: rgba(59, 130, 246, 0.35);
-  box-shadow: 0 0 16px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.08);
+}
+#channel-twitter:hover {
+  border-color: rgba(29, 155, 240, 0.35);
+  box-shadow: 0 0 16px rgba(29, 155, 240, 0.08);
+}
+#channel-linkedin:hover {
+  border-color: rgba(10, 102, 194, 0.35);
+  box-shadow: 0 0 16px rgba(10, 102, 194, 0.08);
 }
 
 /* 4. Multi-step Wizard Styles */
@@ -1132,8 +1104,8 @@ textarea:focus {
 .step-indicator.active .step-number {
   background: var(--accent-primary);
   border-color: var(--accent-primary);
-  color: white;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  color: #07070a;
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .step-indicator.completed .step-number {

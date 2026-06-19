@@ -11,7 +11,7 @@ class AccountController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $platforms = ['youtube', 'instagram', 'wordpress'];
+        $platforms = ['youtube', 'instagram', 'wordpress', 'twitter', 'linkedin'];
         $accountsInfo = [];
 
         foreach ($platforms as $p) {

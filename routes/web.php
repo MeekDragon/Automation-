@@ -53,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
         // OAuth links
         Route::get('/auth/youtube', [OAuthController::class, 'youtubeAuth']);
         Route::get('/auth/instagram', [OAuthController::class, 'instagramAuth']);
+        Route::get('/auth/twitter', [OAuthController::class, 'twitterAuth']);
+        Route::get('/auth/linkedin', [OAuthController::class, 'linkedinAuth']);
     });
 });
 

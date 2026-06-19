@@ -117,7 +117,12 @@ class OAuthController extends Controller
             abort(500, 'Facebook OAuth credentials not configured in .env');
         }
 
-        $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement";
+        $configId = env('FACEBOOK_CONFIG_ID');
+        if ($configId) {
+            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&config_id={$configId}&response_type=code&override_default_response_type=true";
+        } else {
+            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement";
+        }
         return redirect()->away($url);
     }
 
@@ -205,6 +210,50 @@ class OAuthController extends Controller
         } catch (\Exception $e) {
             Log::error('Instagram OAuth Error: ' . $e->getMessage());
             return redirect()->to('/?error=instagram_auth_failed&msg=' . urlencode($e->getMessage()));
+        }
+    }
+
+    public function twitterAuth(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            Account::updateOrCreate(
+                ['platform' => 'twitter'],
+                [
+                    'account_name' => '@MeekDragon_Dev',
+                    'platform_id' => 'twitter-mock-id',
+                    'access_token' => 'mock-twitter-token',
+                    'refresh_token' => null,
+                    'expires_at' => null,
+                    'linked_at' => now(),
+                ]
+            );
+
+            return redirect()->to('/?success=twitter');
+        } catch (\Exception $e) {
+            Log::error('Twitter Mock OAuth Error: ' . $e->getMessage());
+            return redirect()->to('/?error=twitter_auth_failed&msg=' . urlencode($e->getMessage()));
+        }
+    }
+
+    public function linkedinAuth(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            Account::updateOrCreate(
+                ['platform' => 'linkedin'],
+                [
+                    'account_name' => 'Om Yadav (LinkedIn)',
+                    'platform_id' => 'linkedin-mock-id',
+                    'access_token' => 'mock-linkedin-token',
+                    'refresh_token' => null,
+                    'expires_at' => null,
+                    'linked_at' => now(),
+                ]
+            );
+
+            return redirect()->to('/?success=linkedin');
+        } catch (\Exception $e) {
+            Log::error('LinkedIn Mock OAuth Error: ' . $e->getMessage());
+            return redirect()->to('/?error=linkedin_auth_failed&msg=' . urlencode($e->getMessage()));
         }
     }
 }

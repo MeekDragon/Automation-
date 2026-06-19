@@ -24,6 +24,9 @@ const wpStatus = document.getElementById('wp-status');
 const wpLinkBtn = document.getElementById('wp-link-btn');
 const wpUnlinkBtn = document.getElementById('wp-unlink-btn');
 
+const twStatus = document.getElementById('tw-status');
+const liStatus = document.getElementById('li-status');
+
 // Form Selectors & Presets
 const selectorYtVideo = document.querySelector('input[value="youtube_video"]');
 const selectorYtShorts = document.querySelector('input[value="youtube_shorts"]');
@@ -32,6 +35,8 @@ const selectorIgPost = document.querySelector('input[value="instagram_post"]');
 const selectorIgReel = document.querySelector('input[value="instagram_reel"]');
 const selectorIgStory = document.querySelector('input[value="instagram_story"]');
 const selectorWp = document.querySelector('input[value="wordpress"]');
+const selectorTw = document.querySelector('input[value="twitter"]');
+const selectorLi = document.querySelector('input[value="linkedin"]');
 
 const labelYtVideo = document.getElementById('selector-yt-video-label');
 const labelYtShorts = document.getElementById('selector-yt-shorts-label');
@@ -40,6 +45,8 @@ const labelIgPost = document.getElementById('selector-ig-post-label');
 const labelIgReel = document.getElementById('selector-ig-reel-label');
 const labelIgStory = document.getElementById('selector-ig-story-label');
 const labelWp = document.getElementById('selector-wp-label');
+const labelTw = document.getElementById('selector-tw-label');
+const labelLi = document.getElementById('selector-li-label');
 
 const presetsForm = document.getElementById('settings-presets-form-tab');
 const defaultTagsInput = document.getElementById('default-tags-tab');
@@ -481,6 +488,8 @@ function updateAccountsUI() {
   const cardYt = document.getElementById('channel-youtube');
   const cardIg = document.getElementById('channel-instagram');
   const cardWp = document.getElementById('channel-wordpress');
+  const cardTw = document.getElementById('channel-twitter');
+  const cardLi = document.getElementById('channel-linkedin');
 
   // YouTube
   if (linkedAccounts.youtube?.linked) {
@@ -571,6 +580,44 @@ function updateAccountsUI() {
     
     if (selectorWp) { selectorWp.disabled = true; selectorWp.checked = false; }
     if (labelWp) labelWp.classList.add('disabled');
+  }
+
+  // Twitter/X
+  if (linkedAccounts.twitter?.linked) {
+    if (twStatus) {
+      twStatus.innerHTML = `<span class="dot-indicator connected">●</span> Connected: ${escapeHtml(linkedAccounts.twitter.accountName)}`;
+      twStatus.classList.add('connected');
+    }
+    if (cardTw) cardTw.classList.add('connected');
+    if (selectorTw) selectorTw.disabled = false;
+    if (labelTw) labelTw.classList.remove('disabled');
+  } else {
+    if (twStatus) {
+      twStatus.innerHTML = `<span class="dot-indicator disconnected">●</span> Not Connected`;
+      twStatus.classList.remove('connected');
+    }
+    if (cardTw) cardTw.classList.remove('connected');
+    if (selectorTw) { selectorTw.disabled = true; selectorTw.checked = false; }
+    if (labelTw) labelTw.classList.add('disabled');
+  }
+
+  // LinkedIn
+  if (linkedAccounts.linkedin?.linked) {
+    if (liStatus) {
+      liStatus.innerHTML = `<span class="dot-indicator connected">●</span> Connected: ${escapeHtml(linkedAccounts.linkedin.accountName)}`;
+      liStatus.classList.add('connected');
+    }
+    if (cardLi) cardLi.classList.add('connected');
+    if (selectorLi) selectorLi.disabled = false;
+    if (labelLi) labelLi.classList.remove('disabled');
+  } else {
+    if (liStatus) {
+      liStatus.innerHTML = `<span class="dot-indicator disconnected">●</span> Not Connected`;
+      liStatus.classList.remove('connected');
+    }
+    if (cardLi) cardLi.classList.remove('connected');
+    if (selectorLi) { selectorLi.disabled = true; selectorLi.checked = false; }
+    if (labelLi) labelLi.classList.add('disabled');
   }
 }
 
@@ -1166,6 +1213,8 @@ function updateTelemetryStats() {
     if (linkedAccounts.youtube?.linked) connectedCount++;
     if (linkedAccounts.instagram?.linked) connectedCount++;
     if (linkedAccounts.wordpress?.linked) connectedCount++;
+    if (linkedAccounts.twitter?.linked) connectedCount++;
+    if (linkedAccounts.linkedin?.linked) connectedCount++;
     connectedVal.textContent = connectedCount;
   }
   if (scheduledVal) {
@@ -1355,6 +1404,10 @@ function renderAnalyticsTab() {
   const igBar = document.getElementById('analytics-ig-bar');
   const wpPct = document.getElementById('analytics-wp-pct');
   const wpBar = document.getElementById('analytics-wp-bar');
+  const twPct = document.getElementById('analytics-tw-pct');
+  const twBar = document.getElementById('analytics-tw-bar');
+  const liPct = document.getElementById('analytics-li-pct');
+  const liBar = document.getElementById('analytics-li-bar');
   
   const successRatio = document.getElementById('analytics-success-ratio');
   const completedCount = document.getElementById('analytics-completed-count');
@@ -1366,6 +1419,8 @@ function renderAnalyticsTab() {
   let ytCount = 0;
   let igCount = 0;
   let wpCount = 0;
+  let twCount = 0;
+  let liCount = 0;
   
   let comp = 0;
   let fail = 0;
@@ -1377,6 +1432,8 @@ function renderAnalyticsTab() {
       if (d.startsWith('youtube')) ytCount++;
       if (d.startsWith('instagram')) igCount++;
       if (d === 'wordpress') wpCount++;
+      if (d === 'twitter') twCount++;
+      if (d === 'linkedin') liCount++;
     });
     
     if (job.status === 'COMPLETED') comp++;
@@ -1384,11 +1441,13 @@ function renderAnalyticsTab() {
     else pend++;
   });
   
-  const totalDest = ytCount + igCount + wpCount;
+  const totalDest = ytCount + igCount + wpCount + twCount + liCount;
   if (totalDest > 0) {
     const ytVal = Math.round((ytCount / totalDest) * 100);
     const igVal = Math.round((igCount / totalDest) * 100);
-    const wpVal = 100 - ytVal - igVal;
+    const wpVal = Math.round((wpCount / totalDest) * 100);
+    const twVal = Math.round((twCount / totalDest) * 100);
+    const liVal = 100 - ytVal - igVal - wpVal - twVal;
     
     ytPct.textContent = `${ytVal}%`;
     ytBar.style.width = `${ytVal}%`;
@@ -1396,6 +1455,10 @@ function renderAnalyticsTab() {
     igBar.style.width = `${igVal}%`;
     wpPct.textContent = `${wpVal}%`;
     wpBar.style.width = `${wpVal}%`;
+    if (twPct) twPct.textContent = `${twVal}%`;
+    if (twBar) twBar.style.width = `${twVal}%`;
+    if (liPct) liPct.textContent = `${liVal}%`;
+    if (liBar) liBar.style.width = `${liVal}%`;
   } else {
     ytPct.textContent = '0%';
     ytBar.style.width = '0%';
@@ -1403,6 +1466,10 @@ function renderAnalyticsTab() {
     igBar.style.width = '0%';
     wpPct.textContent = '0%';
     wpBar.style.width = '0%';
+    if (twPct) twPct.textContent = '0%';
+    if (twBar) twBar.style.width = '0%';
+    if (liPct) liPct.textContent = '0%';
+    if (liBar) liBar.style.width = '0%';
   }
   
   const totalJobs = currentJobsList.length;
@@ -1456,6 +1523,22 @@ function syncSettingsTabUI() {
         nameVal: linkedAccounts.wordpress?.accountName,
         svg: `<svg class="brand-svg-icon" viewBox="0 0 24 24"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365a9.55 9.55 0 0 0 3.733-.757m-3.575-7.448h.001zm8.016 4.708a9.49 9.49 0 0 0 .563-3.21c0-1.89-.645-3.208-1.2-4.173-.55-.965-1.062-1.799-1.062-2.776 0 1.09.435 1.933.955 2.87.522.937 1.11 1.983 1.11 3.84a8.673 8.673 0 0 1-.366 2.449zm-8.877-10.74l3.18 8.685 1.666-5.023c.427-1.267.755-1.996.755-2.733a3.523 3.523 0 0 0-.256-1.332A9.53 9.53 0 0 0 12 2.408c-.7 0-1.378.077-2.03.22zm-7.669 8.24c0-2.316.92-4.632 2.49-6.31l3.524 9.684-3.486-9.61A9.515 9.515 0 0 0 2.408 12c0 2.449.921 4.688 2.43 6.402zm6.657 7.21l-3.324-9.664H8.71l3.23 9.395-.873 2.54zm.002 0c-.001-.002-1.82-5.289-1.82-5.289l-1.41 4.1h.001c.954.767 2.134 1.189 3.229 1.189zm0 0c.957 0 1.865-.246 2.668-.677l-.842-2.45-1.826 3.127zm.001 0a9.54 9.54 0 0 0 5.176-1.54L13.167 12.03zm-1.823 0h.002a9.538 9.538 0 0 0 4.22-3.12l-1.397-4.062z"/></svg>`,
         iconClass: 'wp'
+      },
+      { 
+        id: 'twitter', 
+        name: 'Twitter / X', 
+        linked: linkedAccounts.twitter?.linked, 
+        nameVal: linkedAccounts.twitter?.accountName,
+        svg: `<svg class="brand-svg-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+        iconClass: 'tw'
+      },
+      { 
+        id: 'linkedin', 
+        name: 'LinkedIn', 
+        linked: linkedAccounts.linkedin?.linked, 
+        nameVal: linkedAccounts.linkedin?.accountName,
+        svg: `<svg class="brand-svg-icon" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z"/></svg>`,
+        iconClass: 'li'
       }
     ];
     
