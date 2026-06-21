@@ -850,6 +850,13 @@ composerForm.addEventListener('submit', async (e) => {
     return;
   }
 
+  // Check if any YouTube destination is selected and the file is not a video
+  const hasYouTube = selectedPlatforms.some(p => p.startsWith('youtube'));
+  if (hasYouTube && selectedFile && !selectedFile.type.startsWith('video/')) {
+    showAlert('YouTube only supports video uploads. Please upload a video file (.mp4, etc.) or deselect YouTube destinations.', 'danger');
+    return;
+  }
+
   btnPublish.disabled = true;
   publishSpinner.classList.remove('hidden');
   btnPublish.querySelector('.btn-text').classList.add('hidden');
