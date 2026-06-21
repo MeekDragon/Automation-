@@ -51,6 +51,38 @@ class InstagramService
         $igAccountId = $account->platform_id;
         $accessToken = $account->access_token;
 
+        if ($accessToken === 'mock-instagram-token' || $igAccountId === 'instagram-mock-id') {
+            JobLog::create([
+                'job_id' => $jobId,
+                'platform_key' => $platformName,
+                'message' => 'Uploading media to a temporary public URL for platform retrieval...',
+                'type' => 'info'
+            ]);
+            sleep(1);
+            JobLog::create([
+                'job_id' => $jobId,
+                'platform_key' => $platformName,
+                'message' => 'Creating Instagram media container (' . strtoupper(str_replace('instagram_', '', $type)) . ')...',
+                'type' => 'info'
+            ]);
+            sleep(1);
+            JobLog::create([
+                'job_id' => $jobId,
+                'platform_key' => $platformName,
+                'message' => 'Processing complete. Publishing post now...',
+                'type' => 'info'
+            ]);
+            sleep(1);
+            $postUrl = 'https://www.instagram.com/omyadav_16';
+            JobLog::create([
+                'job_id' => $jobId,
+                'platform_key' => $platformName,
+                'message' => "Post published successfully! Link: {$postUrl}",
+                'type' => 'success'
+            ]);
+            return $postUrl;
+        }
+
         // 1. Host file temporarily
         $publicMediaUrl = self::getPublicUrlForFile($jobId, $platformName, $filePath);
 

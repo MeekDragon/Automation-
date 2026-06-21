@@ -116,7 +116,7 @@ class ProcessCrossPostingJob implements ShouldQueue
                         'type' => 'info'
                     ]);
                     sleep(1);
-                    $permalink = "https://x.com/MeekDragon_Dev/status/" . rand(100000000, 999999999);
+                    $permalink = "https://x.com/OmY1606";
                     JobLog::create([
                         'job_id' => $this->jobId,
                         'platform_key' => $platform,
@@ -138,7 +138,7 @@ class ProcessCrossPostingJob implements ShouldQueue
                         'type' => 'info'
                     ]);
                     sleep(1);
-                    $permalink = "https://www.linkedin.com/feed/update/urn:li:share:" . rand(1000000000, 9999999999);
+                    $permalink = "https://www.linkedin.com/in/omyadav16";
                     JobLog::create([
                         'job_id' => $this->jobId,
                         'platform_key' => $platform,

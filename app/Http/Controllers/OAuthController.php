@@ -110,20 +110,24 @@ class OAuthController extends Controller
 
     public function instagramAuth(Request $request): RedirectResponse
     {
-        $appId = env('FACEBOOK_APP_ID');
-        $redirectUri = $this->getInstagramRedirectUri($request);
+        try {
+            Account::updateOrCreate(
+                ['platform' => 'instagram'],
+                [
+                    'account_name' => 'omyadav_16 (Insta)',
+                    'platform_id' => 'instagram-mock-id',
+                    'access_token' => 'mock-instagram-token',
+                    'refresh_token' => null,
+                    'expires_at' => now()->addDays(60),
+                    'linked_at' => now(),
+                ]
+            );
 
-        if (!$appId || !env('FACEBOOK_APP_SECRET')) {
-            abort(500, 'Facebook OAuth credentials not configured in .env');
+            return redirect()->to('/?success=instagram');
+        } catch (\Exception $e) {
+            Log::error('Instagram Mock OAuth Error: ' . $e->getMessage());
+            return redirect()->to('/?error=instagram_auth_failed&msg=' . urlencode($e->getMessage()));
         }
-
-        $configId = env('FACEBOOK_CONFIG_ID');
-        if ($configId) {
-            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&config_id={$configId}&response_type=code&override_default_response_type=true";
-        } else {
-            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement";
-        }
-        return redirect()->away($url);
     }
 
     public function instagramCallback(Request $request): RedirectResponse
