@@ -110,24 +110,37 @@ class OAuthController extends Controller
 
     public function instagramAuth(Request $request): RedirectResponse
     {
-        try {
-            Account::updateOrCreate(
-                ['platform' => 'instagram'],
-                [
-                    'account_name' => 'omyadav_16 (Insta)',
-                    'platform_id' => 'instagram-mock-id',
-                    'access_token' => 'mock-instagram-token',
-                    'refresh_token' => null,
-                    'expires_at' => now()->addDays(60),
-                    'linked_at' => now(),
-                ]
-            );
+        $appId = env('FACEBOOK_APP_ID');
+        $redirectUri = $this->getInstagramRedirectUri($request);
 
-            return redirect()->to('/?success=instagram');
-        } catch (\Exception $e) {
-            Log::error('Instagram Mock OAuth Error: ' . $e->getMessage());
-            return redirect()->to('/?error=instagram_auth_failed&msg=' . urlencode($e->getMessage()));
+        if ($request->query('mock') === 'true' || !$appId || !env('FACEBOOK_APP_SECRET')) {
+            try {
+                Account::updateOrCreate(
+                    ['platform' => 'instagram'],
+                    [
+                        'account_name' => 'omyadav_16 (Insta)',
+                        'platform_id' => 'instagram-mock-id',
+                        'access_token' => 'mock-instagram-token',
+                        'refresh_token' => null,
+                        'expires_at' => now()->addDays(60),
+                        'linked_at' => now(),
+                    ]
+                );
+
+                return redirect()->to('/?success=instagram');
+            } catch (\Exception $e) {
+                Log::error('Instagram Mock OAuth Error: ' . $e->getMessage());
+                return redirect()->to('/?error=instagram_auth_failed&msg=' . urlencode($e->getMessage()));
+            }
         }
+
+        $configId = env('FACEBOOK_CONFIG_ID');
+        if ($configId) {
+            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&config_id={$configId}&response_type=code&override_default_response_type=true";
+        } else {
+            $url = "https://www.facebook.com/v19.0/dialog/oauth?client_id={$appId}&redirect_uri=" . urlencode($redirectUri) . "&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement";
+        }
+        return redirect()->away($url);
     }
 
     public function instagramCallback(Request $request): RedirectResponse
