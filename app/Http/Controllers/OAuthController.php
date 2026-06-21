@@ -219,7 +219,7 @@ class OAuthController extends Controller
             Account::updateOrCreate(
                 ['platform' => 'twitter'],
                 [
-                    'account_name' => '@MeekDragon_Dev',
+                    'account_name' => '@OmY1606',
                     'platform_id' => 'twitter-mock-id',
                     'access_token' => 'mock-twitter-token',
                     'refresh_token' => null,
@@ -241,7 +241,7 @@ class OAuthController extends Controller
             Account::updateOrCreate(
                 ['platform' => 'linkedin'],
                 [
-                    'account_name' => 'Om Yadav (LinkedIn)',
+                    'account_name' => 'Om Yadav (omyadav16)',
                     'platform_id' => 'linkedin-mock-id',
                     'access_token' => 'mock-linkedin-token',
                     'refresh_token' => null,
