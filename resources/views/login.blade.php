@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OmniPublish - Sign In</title>
+  <title>CrossPublish - Sign In</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -188,7 +188,7 @@
 
   <div class="login-card">
     <div class="logo-container">
-      <h1>OmniPublish</h1>
+      <h1>CrossPublish</h1>
       <p>Cross-Posting Automation Workspace</p>
     </div>
 

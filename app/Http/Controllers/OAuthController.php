@@ -35,6 +35,30 @@ class OAuthController extends Controller
         return $redirectUri;
     }
 
+    private function getTwitterRedirectUri(Request $request): string
+    {
+        $redirectUri = env('TWITTER_REDIRECT_URI', 'http://localhost:3000/auth/twitter/callback');
+        $host = $request->getHost();
+        $port = $request->getPort();
+        $hostWithPort = $port && $port != 80 && $port != 443 ? "{$host}:{$port}" : $host;
+        if ($host && !str_contains($redirectUri, $host)) {
+            $redirectUri = $request->getScheme() . "://{$hostWithPort}/auth/twitter/callback";
+        }
+        return $redirectUri;
+    }
+
+    private function getLinkedinRedirectUri(Request $request): string
+    {
+        $redirectUri = env('LINKEDIN_REDIRECT_URI', 'http://localhost:3000/auth/linkedin/callback');
+        $host = $request->getHost();
+        $port = $request->getPort();
+        $hostWithPort = $port && $port != 80 && $port != 443 ? "{$host}:{$port}" : $host;
+        if ($host && !str_contains($redirectUri, $host)) {
+            $redirectUri = $request->getScheme() . "://{$hostWithPort}/auth/linkedin/callback";
+        }
+        return $redirectUri;
+    }
+
     public function youtubeAuth(Request $request): RedirectResponse
     {
         $redirectUri = $this->getGoogleRedirectUri($request);
@@ -232,44 +256,216 @@ class OAuthController extends Controller
 
     public function twitterAuth(Request $request): \Illuminate\Http\RedirectResponse
     {
+        $clientId = env('TWITTER_CLIENT_ID');
+        if ($request->query('mock') === 'true' || !$clientId) {
+            try {
+                Account::updateOrCreate(
+                    ['platform' => 'twitter'],
+                    [
+                        'account_name' => '@OmY1606',
+                        'platform_id' => 'twitter-mock-id',
+                        'access_token' => 'mock-twitter-token',
+                        'refresh_token' => null,
+                        'expires_at' => null,
+                        'linked_at' => now(),
+                    ]
+                );
+                return redirect()->to('/?success=twitter');
+            } catch (\Exception $e) {
+                return redirect()->to('/?error=twitter_auth_failed&msg=' . urlencode($e->getMessage()));
+            }
+        }
+
+        $redirectUri = $this->getTwitterRedirectUri($request);
+        $state = \Illuminate\Support\Str::random(40);
+        $codeVerifier = \Illuminate\Support\Str::random(128);
+        
+        $request->session()->put('twitter_oauth_state', $state);
+        $request->session()->put('twitter_oauth_verifier', $codeVerifier);
+        
+        $codeChallenge = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(hash('sha256', $codeVerifier, true)));
+        
+        $url = "https://twitter.com/i/oauth2/authorize?" . http_build_query([
+            'response_type' => 'code',
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'scope' => 'tweet.read tweet.write users.read offline.access media.write',
+            'state' => $state,
+            'code_challenge' => $codeChallenge,
+            'code_challenge_method' => 'S256',
+        ]);
+        
+        return redirect()->away($url);
+    }
+
+    public function twitterCallback(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $state = $request->query('state');
+        $code = $request->query('code');
+        $error = $request->query('error');
+        
+        if ($error) {
+            return redirect()->to('/?error=twitter_auth_failed&msg=' . urlencode($error));
+        }
+
+        $sessionState = $request->session()->pull('twitter_oauth_state');
+        $codeVerifier = $request->session()->pull('twitter_oauth_verifier');
+
+        if (!$state || $state !== $sessionState) {
+            return redirect()->to('/?error=twitter_auth_failed&msg=' . urlencode('Invalid OAuth state.'));
+        }
+
         try {
+            $clientId = env('TWITTER_CLIENT_ID');
+            $clientSecret = env('TWITTER_CLIENT_SECRET');
+            $redirectUri = $this->getTwitterRedirectUri($request);
+
+            $response = Http::asForm()->withBasicAuth($clientId, $clientSecret)
+                ->post('https://api.twitter.com/2/oauth2/token', [
+                    'code' => $code,
+                    'grant_type' => 'authorization_code',
+                    'redirect_uri' => $redirectUri,
+                    'code_verifier' => $codeVerifier,
+                ]);
+
+            if ($response->failed()) {
+                throw new \Exception('Failed to exchange Twitter code: ' . ($response->json()['error_description'] ?? $response->body()));
+            }
+
+            $data = $response->json();
+            $accessToken = $data['access_token'];
+            $refreshToken = $data['refresh_token'] ?? null;
+            $expiresIn = $data['expires_in'] ?? null;
+            $expiresAt = $expiresIn ? now()->addSeconds($expiresIn) : null;
+
+            $userRes = Http::withToken($accessToken)->get('https://api.twitter.com/2/users/me');
+            if ($userRes->failed()) {
+                throw new \Exception('Failed to fetch Twitter user profile: ' . $userRes->body());
+            }
+
+            $userData = $userRes->json()['data'] ?? [];
+            $username = $userData['username'] ?? 'OmY1606';
+            $twitterUserId = $userData['id'] ?? 'twitter-id';
+
             Account::updateOrCreate(
                 ['platform' => 'twitter'],
                 [
-                    'account_name' => '@OmY1606',
-                    'platform_id' => 'twitter-mock-id',
-                    'access_token' => 'mock-twitter-token',
-                    'refresh_token' => null,
-                    'expires_at' => null,
+                    'account_name' => '@' . $username,
+                    'platform_id' => $twitterUserId,
+                    'access_token' => $accessToken,
+                    'refresh_token' => $refreshToken,
+                    'expires_at' => $expiresAt,
                     'linked_at' => now(),
                 ]
             );
 
             return redirect()->to('/?success=twitter');
         } catch (\Exception $e) {
-            Log::error('Twitter Mock OAuth Error: ' . $e->getMessage());
+            Log::error('Twitter OAuth Error: ' . $e->getMessage());
             return redirect()->to('/?error=twitter_auth_failed&msg=' . urlencode($e->getMessage()));
         }
     }
 
     public function linkedinAuth(Request $request): \Illuminate\Http\RedirectResponse
     {
+        $clientId = env('LINKEDIN_CLIENT_ID');
+        if ($request->query('mock') === 'true' || !$clientId) {
+            try {
+                Account::updateOrCreate(
+                    ['platform' => 'linkedin'],
+                    [
+                        'account_name' => 'Om Yadav (omyadav16)',
+                        'platform_id' => 'linkedin-mock-id',
+                        'access_token' => 'mock-linkedin-token',
+                        'refresh_token' => null,
+                        'expires_at' => null,
+                        'linked_at' => now(),
+                    ]
+                );
+                return redirect()->to('/?success=linkedin');
+            } catch (\Exception $e) {
+                return redirect()->to('/?error=linkedin_auth_failed&msg=' . urlencode($e->getMessage()));
+            }
+        }
+
+        $redirectUri = $this->getLinkedinRedirectUri($request);
+        $state = \Illuminate\Support\Str::random(40);
+        $request->session()->put('linkedin_oauth_state', $state);
+
+        $url = "https://www.linkedin.com/oauth/v2/authorization?" . http_build_query([
+            'response_type' => 'code',
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'state' => $state,
+            'scope' => 'w_member_social r_liteprofile',
+        ]);
+
+        return redirect()->away($url);
+    }
+
+    public function linkedinCallback(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $state = $request->query('state');
+        $code = $request->query('code');
+        $error = $request->query('error');
+        
+        if ($error) {
+            return redirect()->to('/?error=linkedin_auth_failed&msg=' . urlencode($error));
+        }
+
+        $sessionState = $request->session()->pull('linkedin_oauth_state');
+        if (!$state || $state !== $sessionState) {
+            return redirect()->to('/?error=linkedin_auth_failed&msg=' . urlencode('Invalid OAuth state.'));
+        }
+
         try {
+            $clientId = env('LINKEDIN_CLIENT_ID');
+            $clientSecret = env('LINKEDIN_CLIENT_SECRET');
+            $redirectUri = $this->getLinkedinRedirectUri($request);
+
+            $response = Http::asForm()->post('https://www.linkedin.com/oauth/v2/accessToken', [
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => $redirectUri,
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+            ]);
+
+            if ($response->failed()) {
+                throw new \Exception('Failed to exchange LinkedIn code: ' . ($response->json()['error_description'] ?? $response->body()));
+            }
+
+            $data = $response->json();
+            $accessToken = $data['access_token'];
+            $expiresIn = $data['expires_in'] ?? null;
+            $expiresAt = $expiresIn ? now()->addSeconds($expiresIn) : null;
+
+            $profileRes = Http::withToken($accessToken)->get('https://api.linkedin.com/v2/me');
+            if ($profileRes->failed()) {
+                throw new \Exception('Failed to fetch LinkedIn profile: ' . $profileRes->body());
+            }
+
+            $profileData = $profileRes->json();
+            $firstName = $profileData['localizedFirstName'] ?? 'Om';
+            $lastName = $profileData['localizedLastName'] ?? 'Yadav';
+            $personId = $profileData['id'] ?? 'linkedin-id';
+            $accountName = "{$firstName} {$lastName} ({$personId})";
+
             Account::updateOrCreate(
                 ['platform' => 'linkedin'],
                 [
-                    'account_name' => 'Om Yadav (omyadav16)',
-                    'platform_id' => 'linkedin-mock-id',
-                    'access_token' => 'mock-linkedin-token',
+                    'account_name' => $accountName,
+                    'platform_id' => $personId,
+                    'access_token' => $accessToken,
                     'refresh_token' => null,
-                    'expires_at' => null,
+                    'expires_at' => $expiresAt,
                     'linked_at' => now(),
                 ]
             );
 
             return redirect()->to('/?success=linkedin');
         } catch (\Exception $e) {
-            Log::error('LinkedIn Mock OAuth Error: ' . $e->getMessage());
+            Log::error('LinkedIn OAuth Error: ' . $e->getMessage());
             return redirect()->to('/?error=linkedin_auth_failed&msg=' . urlencode($e->getMessage()));
         }
     }

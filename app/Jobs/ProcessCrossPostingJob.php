@@ -15,6 +15,8 @@ use App\Models\JobLog;
 use App\Services\YouTubeService;
 use App\Services\InstagramService;
 use App\Services\WordPressService;
+use App\Services\TwitterService;
+use App\Services\LinkedInService;
 use Illuminate\Support\Facades\Log;
 
 class ProcessCrossPostingJob implements ShouldQueue
@@ -102,49 +104,57 @@ class ProcessCrossPostingJob implements ShouldQueue
                 } elseif ($platform === 'wordpress') {
                     $permalink = WordPressService::upload($this->jobId, $account, $this->filePath, $metadata, $this->platformOptions);
                 } elseif ($platform === 'twitter') {
-                    JobLog::create([
-                        'job_id' => $this->jobId,
-                        'platform_key' => $platform,
-                        'message' => 'Uploading media assets to Twitter media endpoints...',
-                        'type' => 'info'
-                    ]);
-                    sleep(1);
-                    JobLog::create([
-                        'job_id' => $this->jobId,
-                        'platform_key' => $platform,
-                        'message' => 'Publishing tweet status update with media attachment...',
-                        'type' => 'info'
-                    ]);
-                    sleep(1);
-                    $permalink = "https://x.com/OmY1606";
-                    JobLog::create([
-                        'job_id' => $this->jobId,
-                        'platform_key' => $platform,
-                        'message' => "Successfully posted tweet: {$permalink}",
-                        'type' => 'success'
-                    ]);
+                    if ($account->access_token !== 'mock-twitter-token') {
+                        $permalink = TwitterService::upload($this->jobId, $account, $this->filePath, $this->description);
+                    } else {
+                        JobLog::create([
+                            'job_id' => $this->jobId,
+                            'platform_key' => $platform,
+                            'message' => 'Uploading media assets to Twitter media endpoints...',
+                            'type' => 'info'
+                        ]);
+                        sleep(1);
+                        JobLog::create([
+                            'job_id' => $this->jobId,
+                            'platform_key' => $platform,
+                            'message' => 'Publishing tweet status update with media attachment...',
+                            'type' => 'info'
+                        ]);
+                        sleep(1);
+                        $permalink = "https://x.com/OmY1606";
+                        JobLog::create([
+                            'job_id' => $this->jobId,
+                            'platform_key' => $platform,
+                            'message' => "Successfully posted tweet: {$permalink}",
+                            'type' => 'success'
+                        ]);
+                    }
                 } elseif ($platform === 'linkedin') {
-                    JobLog::create([
-                        'job_id' => $this->jobId,
-                        'platform_key' => $platform,
-                        'message' => 'Uploading and registering media asset on LinkedIn UGC...',
-                        'type' => 'info'
-                    ]);
-                    sleep(1);
-                    JobLog::create([
-                        'job_id' => $this->jobId,
-                        'platform_key' => $platform,
-                        'message' => 'Creating LinkedIn share content...',
-                        'type' => 'info'
-                    ]);
-                    sleep(1);
-                    $permalink = "https://www.linkedin.com/in/omyadav16";
-                    JobLog::create([
-                        'job_id' => $this->jobId,
-                        'platform_key' => $platform,
-                        'message' => "Successfully shared on LinkedIn: {$permalink}",
-                        'type' => 'success'
-                    ]);
+                    if ($account->access_token !== 'mock-linkedin-token') {
+                        $permalink = LinkedInService::upload($this->jobId, $account, $this->filePath, $this->description);
+                    } else {
+                        JobLog::create([
+                            'job_id' => $this->jobId,
+                            'platform_key' => $platform,
+                            'message' => 'Uploading and registering media asset on LinkedIn UGC...',
+                            'type' => 'info'
+                        ]);
+                        sleep(1);
+                        JobLog::create([
+                            'job_id' => $this->jobId,
+                            'platform_key' => $platform,
+                            'message' => 'Creating LinkedIn share content...',
+                            'type' => 'info'
+                        ]);
+                        sleep(1);
+                        $permalink = "https://www.linkedin.com/in/omyadav16";
+                        JobLog::create([
+                            'job_id' => $this->jobId,
+                            'platform_key' => $platform,
+                            'message' => "Successfully shared on LinkedIn: {$permalink}",
+                            'type' => 'success'
+                        ]);
+                    }
                 }
 
                 if ($destination) {

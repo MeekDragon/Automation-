@@ -61,3 +61,5 @@ Route::middleware(['auth'])->group(function () {
 // OAuth Callback routes (must be guest/public accessible since external providers redirect here)
 Route::get('/auth/youtube/callback', [OAuthController::class, 'youtubeCallback']);
 Route::get('/auth/instagram/callback', [OAuthController::class, 'instagramCallback']);
+Route::get('/auth/twitter/callback', [OAuthController::class, 'twitterCallback']);
+Route::get('/auth/linkedin/callback', [OAuthController::class, 'linkedinCallback']);

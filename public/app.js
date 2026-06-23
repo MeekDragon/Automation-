@@ -1,4 +1,4 @@
-// OmniPublish Dashboard Client Logic
+// CrossPublish Dashboard Client Logic
 
 // State
 let currentUser = null;
